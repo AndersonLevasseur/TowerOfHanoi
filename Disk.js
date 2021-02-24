@@ -3,4 +3,8 @@ module.exports = class Disk {
         // TODO: validation
         this.size = size;
     }
+
+    toString() {
+        return this.size;
+    }
 }
