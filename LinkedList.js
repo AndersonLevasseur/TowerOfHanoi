@@ -8,6 +8,29 @@ module.exports = class LinkedList {
     this.#tail = null;
   }
 
+  // *[Symbol.iterator]() {
+  //   let current = this.#head;
+  //   while(current !== null) {
+  //     yield current.contents;
+  //     current = current.next;
+  //   }
+  // }
+
+  [Symbol.iterator]() {
+    let current = this.#head;
+    return {
+      next: () => {
+        if(current !== null) {
+          const result = {value: current.contents, done: false};
+          current = current.next;
+          return result;
+        } else {
+          return {done: true};
+        }
+      }
+    };
+  }
+
   // Adds an element to the head of the linked list and returns nothing
   push(element) {
     // element is the contents of the node
