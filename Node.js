@@ -1,6 +1,7 @@
 module.exports = class Node {
-    constructor(contents, next = null) {
+    constructor(contents, previous = null, next = null) {
         this.next = next;
         this.contents = contents;
+        this.previous = previous;
     }
 }
