@@ -8,24 +8,16 @@ module.exports = class LinkedList {
     this.#tail = null;
   }
 
-  // *[Symbol.iterator]() {
-  //   let current = this.#head;
-  //   while(current !== null) {
-  //     yield current.contents;
-  //     current = current.next;
-  //   }
-  // }
-
   [Symbol.iterator]() {
     let current = this.#head;
     return {
       next: () => {
-        if(current !== null) {
-          const result = {value: current.contents, done: false};
+        if (current !== null) {
+          const result = { value: current.contents, done: false };
           current = current.next;
           return result;
         } else {
-          return {done: true};
+          return { done: true };
         }
       }
     };
@@ -42,6 +34,7 @@ module.exports = class LinkedList {
 
     if (!!this.#head) {
       newNode.next = this.#head;
+      this.#head.previos = newNode;
     }
 
     this.#head = newNode;
@@ -52,15 +45,16 @@ module.exports = class LinkedList {
   pop() {
     let selectedNode = this.#head;
     if (!!this.#head) {
-      // reassign this.head
+      if (this.length === 1) {
+        this.#tail = null;
+      } else {
+        (this.#head.next).previous = null;
+      }
       this.#head = this.#head.next;
     } else {
       throw "Nothing to Remove";
     }
     this.length--;
-    if (this.length === 0) {
-      this.#tail = null;
-    }
     return selectedNode.contents;
   }
 
@@ -73,15 +67,36 @@ module.exports = class LinkedList {
     }
   }
 
+  peekTail() {
+    if (!!this.#tail) {
+      return this.#tail.contents;
+    } else {
+      return undefined;
+    }
+  }
+
   addToEnd(element) {
     let newNode = new Node(element);
     if (this.length === 0) {
       this.push(element);
     } else {
-      this.#tail.next = newNode;
+      if (!!this.#tail) {
+        this.#tail.next = newNode;
+        newNode.previous = this.#tail;
+      }
       this.#tail = newNode;
     }
     this.length++;
+  }
+
+  removeFromTail() {
+    if (this.length === 1) {
+      this.pop();
+    }
+    const result = this.#tail;
+    this.#tail = this.#tail.previous;
+    this.#tail.next = null;
+    return result;
   }
   // Adds an element to the point in the linked list defined by the zero 
   // indexed location parameter and returns nothing
@@ -110,6 +125,7 @@ module.exports = class LinkedList {
       }
       previousNode.next = newNode;
       newNode.next = currentNode;
+      currentNode.previous = newNode;
     }
     this.length++;
   }
@@ -134,7 +150,10 @@ module.exports = class LinkedList {
       }
     }
     if (count === 0) {
-      if (this.#head) {
+      if (!!this.#head) {
+        if(this.#head.next) {
+          (this.#head.next).previous = null;
+        }
         this.#head = this.#head.next;
       } else {
         throw "Location not Found";
@@ -164,14 +183,18 @@ module.exports = class LinkedList {
       count++
     }
     if (count === 0) {
+      if(this.#head.next) {
+        (this.#head.next).previous = null;
+      }
       this.#head = this.#head.next;
-      soughtElement = currentNode.contents;
     } else {
-      soughtElement = currentNode.contents;
+        if (currentNode.next) {
+          (currentNode.next).previous = previousNode;
+        }
       previousNode.next = currentNode.next;
     }
     this.length--;
-    return soughtElement;
+    return currentNode.contents;
   }
 
   // Returns a comma and space separated list of values representing the contents of the
