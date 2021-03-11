@@ -53,12 +53,21 @@ module.exports = class Gameboard {
 
     toString() {
         const listOfRows = new LinkedList();
+        let largestPinSize;
         let finalResult = "";
         let pin1Iter = this.pinOne[Symbol.iterator]();
         let pin2Iter = this.pinTwo[Symbol.iterator]();
         let pin3Iter = this.pinThree[Symbol.iterator]();
-        
-        for (let i = 0; i < this.numberOfDisks; i++) {
+     
+        if(this.pinOne.length >= this.pinTwo.length && this.pinOne >= this.pinThree) {
+            largestPinSize = this.pinOne.length;
+        } else if(this.pinTwo.length >= this.pinOne.length && this.pinTwo >= this.pinThree) {
+            largestPinSize = this.pinTwo.length;
+        } else {
+            largestPinSize = this.pinThree.length;
+        }
+     
+        for (let i = 0; i < largestPinSize; i++) {
             let row = "";
             row += this.print(pin1Iter.next());
             row += this.print(pin2Iter.next());
