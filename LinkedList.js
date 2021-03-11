@@ -31,10 +31,9 @@ module.exports = class LinkedList {
     if (this.length === 0) {
       this.#tail = newNode;
     }
-
     if (!!this.#head) {
+      this.#head.previous = newNode;
       newNode.next = this.#head;
-      this.#head.previos = newNode;
     }
 
     this.#head = newNode;
@@ -85,18 +84,23 @@ module.exports = class LinkedList {
         newNode.previous = this.#tail;
       }
       this.#tail = newNode;
+      this.length++;
     }
-    this.length++;
   }
 
   removeFromTail() {
-    if (this.length === 1) {
-      this.pop();
+    if(this.length === 0) {
+      throw "Nothing to Remove"
     }
-    const result = this.#tail;
-    this.#tail = this.#tail.previous;
-    this.#tail.next = null;
-    return result;
+    if (this.length === 1) {
+      return this.pop();
+    } else {
+      this.length--
+      const result = this.#tail.contents;
+      this.#tail = this.#tail.previous;
+      this.#tail.next = null;
+      return result;
+    }
   }
   // Adds an element to the point in the linked list defined by the zero 
   // indexed location parameter and returns nothing
@@ -134,6 +138,7 @@ module.exports = class LinkedList {
   // indexed location parameter
   removeFrom(location) {
     // TODO: add validation
+    //location needs to be a number that is doesn't exceed the number of disks
     let count = 0;
     let currentNode = this.#head;
     let previousNode;
@@ -151,7 +156,7 @@ module.exports = class LinkedList {
     }
     if (count === 0) {
       if (!!this.#head) {
-        if(this.#head.next) {
+        if (this.#head.next) {
           (this.#head.next).previous = null;
         }
         this.#head = this.#head.next;
@@ -183,14 +188,14 @@ module.exports = class LinkedList {
       count++
     }
     if (count === 0) {
-      if(this.#head.next) {
+      if (this.#head.next) {
         (this.#head.next).previous = null;
       }
       this.#head = this.#head.next;
     } else {
-        if (currentNode.next) {
-          (currentNode.next).previous = previousNode;
-        }
+      if (currentNode.next) {
+        (currentNode.next).previous = previousNode;
+      }
       previousNode.next = currentNode.next;
     }
     this.length--;
