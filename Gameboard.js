@@ -10,90 +10,90 @@ module.exports = class Gameboard {
         this.pinThree = new LinkedList();
 
         for (let i = 0; i < numberOfDisks; i++) {
-            this.pinOne.addToEnd(new Disk(i + 1));
+            this.pinOne.push(new Disk(i + 1));
             console.log(this.pinOne.toString());
         }
+        console.log(this.toString());
     }
-    movePile(fromPin, toPin) {
-        // check for size
-        // make sure toPin, fromPin exists
-        // make sure fromPin has disks
-        // make sure fromPin and toPin are different
+    movePile(fromPin, toPin, pileSize) {
+        let sparePin;
+        if (fromPin !== this.pinOne && toPin !== this.pinOne) {
+            sparePin = this.pinOne;
+        }
+        if (fromPin !== this.pinTwo && toPin !== this.pinTwo) {
+            sparePin = this.pinTwo;
+        }
+        if (fromPin !== this.pinThree && toPin !== this.pinThree) {
+            sparePin = this.pinThree;
+        }
 
+
+        if (pileSize === 0) {
+            return;
+        } else {
+            this.movePile(fromPin, sparePin, pileSize - 1);
+            this.moveDisk(fromPin, toPin);
+            this.movePile(sparePin, toPin, pileSize - 1);
+        }
+    }
+
+    print(node) {
+        if (node.done) {
+            let result = "|";
+            result = result.padStart(this.numberOfDisks + 1, " ").padEnd((2 * this.numberOfDisks) + 1, " ");
+            return result;
+        } else {
+            let disk = node.value;
+            let result = "+";
+            result = result.padStart(disk.size + 1, "-").padEnd((2 * disk.size) + 1, "-");
+            result = result.padStart((this.numberOfDisks - disk.size) + result.length, " ").padEnd((2 * this.numberOfDisks) + 1, " ");
+            return result;
+        }
     }
 
     toString() {
+        const listOfRows = new LinkedList();
         let finalResult = "";
-        //FIX VVV
-        let pinOne = this.pinOne;
-        let pinTwo = this.pinTwo;
-        let pinThree = this.pinThree;
+        let pin1Iter = this.pinOne[Symbol.iterator]();
+        let pin2Iter = this.pinTwo[Symbol.iterator]();
+        let pin3Iter = this.pinThree[Symbol.iterator]();
+        
         for (let i = 0; i < this.numberOfDisks; i++) {
-            // look at pin1 if null make     |   
-            // else make --+-- to disk size
-            // adds pinOne to log
-            if (pinOne.length === 0) {
-                let result = "|";
-                result = result.padStart(this.numberOfDisks + 1, " ").padEnd((2 * this.numberOfDisks) + 1, " ");
-                finalResult += result;
-            } else {
-                let disk = pinOne.pop();
-                let result = "+";
-                result = result.padStart(disk.size + 1, "-").padEnd((2 * disk.size) + 1, "-");
-                result = result.padStart((this.numberOfDisks - disk.size) + result.length, " ").padEnd((2 * this.numberOfDisks) + 1, " ");
-                finalResult += result;
-            }
-
-            // adds pinTwo to log
-            if (pinTwo.length === 0) {
-                let result = "|";
-                result = result.padStart(this.numberOfDisks + 1, " ").padEnd((2 * this.numberOfDisks) + 1, " ");
-                finalResult += result;
-            } else {
-                let disk = pinTwo.pop();
-                let result = "+";
-                result = result.padStart(disk.size + 1, "-").padEnd(2 * disk.size + 1, "-");
-                result = result.padStart(this.numberOfDisks + 1, " ").padEnd((2 * this.numberOfDisks) + 1, " ");
-                finalResult += result;
-            }
-
-            // adds pinThree to log
-            if (pinTwo.length === 0) {
-                let result = "|";
-                result = result.padStart(this.numberOfDisks + 1, " ").padEnd((2 * this.numberOfDisks) + 1, " ");
-                result += "\n"
-                finalResult += result;
-            } else {
-                let disk = pinThree.pop();
-                let result = "+";
-                result = result.padStart(disk.size + 1, "-").padEnd(2 * disk.size + 1, "-");
-                result = result.padStart(this.numberOfDisks + 1, " ").padEnd((2 * this.numberOfDisks) + 1, " ");
-                result += "\n"
-                finalResult += result;
-            }
+            let row = "";
+            row += this.print(pin1Iter.next());
+            row += this.print(pin2Iter.next());
+            row += this.print(pin3Iter.next());
+            listOfRows.push(row + "\n");
+        }
+        for (const row of listOfRows) {
+            finalResult += row;
         }
         return finalResult;
     }
 
     moveDisk(fromPin, toPin) {
-        // what should it return?
-        // check for size
 
-        if (toPin.peek() !== undefined && fromPin.peek() !== undefined && fromPin.peek().size > toPin.peek().size) {
+        if (toPin.peekTail() !== undefined && fromPin.peekTail() !== undefined && fromPin.peekTail().size > toPin.peekTail().size) {
             throw "fromPin disk larger";
-        } else if (fromPin === undefined) {
-            throw "fromPin not found"
-        } else if (toPin === undefined) {
-            throw "toPin not found";
-        } else if (fromPin.length < 1) {
-            throw "fromPin has no disks";
-        } else if (fromPin === toPin) {
-            throw "pins sre the same";
-        } else {
-            let fromPinDisk = fromPin.pop();
-            toPin.push(fromPinDisk);
-            this.Gameboard.toString();
         }
+
+        if (fromPin === undefined) {
+            throw "fromPin not found"
+        }
+
+        if (toPin === undefined) {
+            throw "toPin not found";
+        }
+
+        if (fromPin.length < 1) {
+            throw "fromPin has no disks";
+        }
+
+        if (fromPin === toPin) {
+            throw "pins sre the same";
+        }
+        toPin.addToEnd(fromPin.removeFromTail());
+        console.log(this.toString());
     }
 
 }
