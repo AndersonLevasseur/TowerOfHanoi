@@ -1,21 +1,22 @@
-const Disk = require('./Disk');
-const LinkedList = require('./LinkedList');
+import Disk from './Disk.mjs';
+import LinkedList from './LinkedList.mjs';
 
-module.exports = class Gameboard {
+export default class Gameboard {
     constructor(numberOfDisks) {
         this.numberOfDisks = numberOfDisks;
-
+        this.result = new LinkedList();
         this.pinOne = new LinkedList();
         this.pinTwo = new LinkedList();
         this.pinThree = new LinkedList();
 
         for (let i = 0; i < numberOfDisks; i++) {
             this.pinOne.push(new Disk(i + 1));
-            console.log(this.pinOne.toString());
-        }
+            }
         console.log(this.toString());
     }
+
     movePile(fromPin, toPin, pileSize) {
+        let timeStart = Date.now();
         let sparePin;
         if (fromPin !== this.pinOne && toPin !== this.pinOne) {
             sparePin = this.pinOne;
@@ -59,15 +60,15 @@ module.exports = class Gameboard {
         let pin2Iter = this.pinTwo[Symbol.iterator]();
         let pin3Iter = this.pinThree[Symbol.iterator]();
      
-        if(this.pinOne.length >= this.pinTwo.length && this.pinOne >= this.pinThree) {
+        if(this.pinOne.length >= this.pinTwo.length && this.pinOne.length >= this.pinThree.length) {
             largestPinSize = this.pinOne.length;
-        } else if(this.pinTwo.length >= this.pinOne.length && this.pinTwo >= this.pinThree) {
+        } else if(this.pinTwo.length >= this.pinOne.length && this.pinTwo.length >= this.pinThree.length) {
             largestPinSize = this.pinTwo.length;
         } else {
             largestPinSize = this.pinThree.length;
         }
      
-        for (let i = 0; i < largestPinSize; i++) {
+        for (let i = 0; i < largestPinSize + 1; i++) {
             let row = "";
             row += this.print(pin1Iter.next());
             row += this.print(pin2Iter.next());
@@ -81,7 +82,6 @@ module.exports = class Gameboard {
     }
 
     moveDisk(fromPin, toPin) {
-
         if (toPin.peekTail() !== undefined && fromPin.peekTail() !== undefined && fromPin.peekTail().size > toPin.peekTail().size) {
             throw "fromPin disk larger";
         }
@@ -102,7 +102,7 @@ module.exports = class Gameboard {
             throw "pins sre the same";
         }
         toPin.addToEnd(fromPin.removeFromTail());
-        console.log(this.toString());
+        this.result.addToEnd(this.toString());
+        return this.Gameboard;
     }
-
 }

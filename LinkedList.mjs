@@ -1,5 +1,5 @@
-const Node = require('./Node.js');
-module.exports = class LinkedList {
+import Node from './Node.mjs';
+export default class LinkedList {
   #head;
   #tail;
   constructor() {

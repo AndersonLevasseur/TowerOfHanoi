@@ -1,4 +1,4 @@
-module.exports = class Disk {
+export default class Disk {
     constructor(size) {
         // TODO: validation
         this.size = size;
