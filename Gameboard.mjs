@@ -16,7 +16,6 @@ export default class Gameboard {
     }
 
     movePile(fromPin, toPin, pileSize) {
-        let timeStart = Date.now();
         let sparePin;
         if (fromPin !== this.pinOne && toPin !== this.pinOne) {
             sparePin = this.pinOne;
@@ -103,6 +102,5 @@ export default class Gameboard {
         }
         toPin.addToEnd(fromPin.removeFromTail());
         this.result.addToEnd(this.toString());
-        return this.Gameboard;
     }
 }

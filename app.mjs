@@ -1,78 +1,90 @@
-import {solve} from './towerOfHanoi.mjs'
+import Gameboard from './Gameboard.mjs'
+const gameboardInstance = new Gameboard(100);
 
 
-const diskHeight = 10;
-const baseThickness = 10;
-const x1loc = 240;
-const x2loc = 480;
-const x3loc = 720;
-//mock what happens when the page reloads or whatever
+
+let pinHeight = 700;
+let diskHeight = ((pinHeight - 20) / gameboardInstance.numberOfDisks) - 1;
+let diskWidth = 265 / gameboardInstance.numberOfDisks;
+let pinWidth = diskWidth / 2;
+console.log(gameboardInstance.numberOfDisks);
+
+let x1loc = 240;
+let x2loc = 480;
+let x3loc = 720;
+
+let baseYLoc = 720;
+
+let canvas = document.getElementById("Gameboard");
+let ctx = canvas.getContext("2d");
+
+
+if (gameboardInstance.numberOfDisks > 100) {
+    gameboardInstance = new Gameboard(100);
+    console.log("Number of disks too large : Reduced to 100");
+}
+
+drawEverything(gameboardInstance);
+
 
 function drawEverything(gameboard) {
     drawBoard();
-    populatePin(gameboard.pin1, x1loc);
-    populatePin(gameboard.pin2, x2loc);
-    populatePin(gameboard.pin3, x3loc);
+    populatePin(gameboard.pinOne, x1loc);
+    populatePin(gameboard.pinTwo, x2loc);
+    populatePin(gameboard.pinThree, x3loc);
 }
 
 function populatePin(pin, pinXlocation) {
-    let boardPinYLocation = baseThickness;
-    for (const disk in pin) {
-        drawDisk(disk.size, pinXlocation, boardPinYLocation);
-        boardPinYLocation += diskHeight;
+    console.log("populatePin");
+    console.log(pin);
+    let row = 1;
+    for (const disk of pin) {
+        console.log("forLoop");
+        console.log(disk.size);
+        console.log(pinXlocation);
+        console.log(row);
+        drawDisk(disk.size, pinXlocation, row);
+        row++;
     }
 }
 
+
 function drawBoard() {
     // base
-
-    var c = document.getElementById("Gameboard");
-    var ctx = c.getContext("2d");
     ctx.beginPath();
-    ctx.lineWidth = 25;
-    ctx.strokeStyle = "black";
-    ctx.rect(20, 720, 950, 10);
-    ctx.stroke();
+    ctx.rect(20, baseYLoc, 950, 50);
+    ctx.fillStyle = "gray";
+    ctx.fill();
 
     // pin 1
-
-    var c = document.getElementById("Gameboard");
-    var ctx = c.getContext("2d");
+    ctx.fillStyle = "blue";
+console.log(pinWidth);
+    console.log(x1loc, baseYLoc - pinHeight, pinWidth, pinHeight)
     ctx.beginPath();
-    ctx.lineWidth = 25;
-    ctx.strokeStyle = "black";
-    ctx.rect(240, 200, 10, 520);
-    ctx.stroke();
+    ctx.rect(x1loc, baseYLoc - pinHeight, pinWidth, pinHeight);
+    ctx.fill();
 
     // pin 2
 
-    var c = document.getElementById("Gameboard");
-    var ctx = c.getContext("2d");
     ctx.beginPath();
-    ctx.lineWidth = 25;
-    ctx.strokeStyle = "black";
-    ctx.rect(480, 200, 10, 520);
-    ctx.stroke();
-    
+    ctx.rect(x2loc, baseYLoc - pinHeight, pinWidth, pinHeight);
+    ctx.fill();
+
     //pin 3
-    
-    var c = document.getElementById("Gameboard");
-    var ctx = c.getContext("2d");
+
     ctx.beginPath();
-    ctx.lineWidth = 25;
-    ctx.strokeStyle = "black";
-    ctx.rect(720, 200, 10, 520);
-    ctx.stroke();
+    ctx.rect(x3loc, baseYLoc - pinHeight, pinWidth, pinHeight);
+    ctx.fill();
 }
 
 // draw disks
-function drawDisk(sizeOfDisk, pin, row) {
-
-    var c = document.getElementById("Gameboard");
-    var ctx = c.getContext("2d");
+function drawDisk(sizeOfDisk, pinLocation, row) {
     ctx.beginPath();
-    ctx.lineWidth = 25;
-    ctx.strokeStyle = "black";
-    ctx.rect(pin - (sizeOfDisk * 10), ((2 * row) * (-20)) + 701,  sizeOfDisk * 20, 20);
-    ctx.stroke();
+    ctx.fillStyle = "black";
+    const xpos = pinLocation - (sizeOfDisk * (diskWidth / 2)) + (pinWidth / 2);
+    const ypos = (baseYLoc + 1) - (row * (diskHeight + 1));
+    const width = sizeOfDisk * diskWidth;
+    ctx.rect(xpos, ypos, width, diskHeight);
+    ctx.fill();
+    console.log(xpos, ypos, width, diskHeight);
 }
