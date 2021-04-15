@@ -2,16 +2,34 @@ import Disk from './Disk.mjs';
 import LinkedList from './LinkedList.mjs';
 
 export default class Gameboard {
-    constructor(numberOfDisks) {
+    constructor(numberOfDisks, pinOne, pinTwo, pinThree) {
         this.numberOfDisks = numberOfDisks;
         this.result = new LinkedList();
-        this.pinOne = new LinkedList();
-        this.pinTwo = new LinkedList();
-        this.pinThree = new LinkedList();
-
-        for (let i = 0; i < numberOfDisks; i++) {
-            this.pinOne.push(new Disk(i + 1));
+        this.gameboardInstances = new LinkedList();
+        if (pinOne === undefined || pinOne.push() !== pinOne.pop()) {
+            this.pinOne = new LinkedList();
+        } else {
+            this.pinOne = pinOne;
+        }
+        if (pinTwo === undefined || pinTwo.push() !== pinTwo.pop()) {
+            this.pinTwo = new LinkedList();
+        } else {
+            this.pinTwo = pinTwo;
+        }
+        if (pinThree === undefined || pinThree.push() !== pinThree.pop()) {
+            this.pinThree = new LinkedList();
+        } else {
+            this.pinThree = pinThree;
+        }
+        if ((this.pinOne.length + this.pinTwo.length + this.pinThree.length) === 0) {
+            for (let i = 0; i < numberOfDisks; i++) {
+                this.pinOne.push(new Disk(i + 1));
             }
+            console.log(this.toString());
+        }
+        if (numberOfDisks !== (this.pinOne.length + this.pinTwo.length + this.pinThree.length)) {
+            throw "numberOfDisks doesn't match disks on existing board";
+        }
         console.log(this.toString());
     }
 
@@ -51,6 +69,11 @@ export default class Gameboard {
         }
     }
 
+    instanceSave() {
+        const currentInstance = new Gameboard(this.numberOfDisks, this.pinOne, this.pinTwo, this.pinThree);
+        this.gameboardInstances.push(currentInstance);
+    }
+
     toString() {
         const listOfRows = new LinkedList();
         let largestPinSize;
@@ -58,15 +81,15 @@ export default class Gameboard {
         let pin1Iter = this.pinOne[Symbol.iterator]();
         let pin2Iter = this.pinTwo[Symbol.iterator]();
         let pin3Iter = this.pinThree[Symbol.iterator]();
-     
-        if(this.pinOne.length >= this.pinTwo.length && this.pinOne.length >= this.pinThree.length) {
+
+        if (this.pinOne.length >= this.pinTwo.length && this.pinOne.length >= this.pinThree.length) {
             largestPinSize = this.pinOne.length;
-        } else if(this.pinTwo.length >= this.pinOne.length && this.pinTwo.length >= this.pinThree.length) {
+        } else if (this.pinTwo.length >= this.pinOne.length && this.pinTwo.length >= this.pinThree.length) {
             largestPinSize = this.pinTwo.length;
         } else {
             largestPinSize = this.pinThree.length;
         }
-     
+
         for (let i = 0; i < largestPinSize + 1; i++) {
             let row = "";
             row += this.print(pin1Iter.next());
@@ -102,5 +125,8 @@ export default class Gameboard {
         }
         toPin.addToEnd(fromPin.removeFromTail());
         this.result.addToEnd(this.toString());
+        /*Move Maybe VV*/
+        return this.instanceSave();
+
     }
 }
