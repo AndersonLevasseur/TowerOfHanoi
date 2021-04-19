@@ -6,6 +6,7 @@ export default class Gameboard {
         this.numberOfDisks = numberOfDisks;
         this.result = new LinkedList();
         this.gameboardInstances = new LinkedList();
+        this.numberOfMoves = 0;
         if (pinOne === undefined || pinOne.push() !== pinOne.pop()) {
             this.pinOne = new LinkedList();
         } else {
@@ -25,15 +26,15 @@ export default class Gameboard {
             for (let i = 0; i < numberOfDisks; i++) {
                 this.pinOne.push(new Disk(i + 1));
             }
-            console.log(this.toString());
         }
         if (numberOfDisks !== (this.pinOne.length + this.pinTwo.length + this.pinThree.length)) {
             throw "numberOfDisks doesn't match disks on existing board";
         }
-        console.log(this.toString());
     }
 
     movePile(fromPin, toPin, pileSize) {
+        const originalFromPin = fromPin;
+        const originalToPin = toPin;
         let sparePin;
         if (fromPin !== this.pinOne && toPin !== this.pinOne) {
             sparePin = this.pinOne;
@@ -44,14 +45,64 @@ export default class Gameboard {
         if (fromPin !== this.pinThree && toPin !== this.pinThree) {
             sparePin = this.pinThree;
         }
-
-
+        
         if (pileSize === 0) {
             return;
         } else {
             this.movePile(fromPin, sparePin, pileSize - 1);
             this.moveDisk(fromPin, toPin);
             this.movePile(sparePin, toPin, pileSize - 1);
+        }
+
+        
+    }
+    
+    iterativeSolve(fromPin, toPin) {
+        let sparePin;
+        if (fromPin !== this.pinOne && toPin !== this.pinOne) {
+            sparePin = this.pinOne;
+        }
+        if (fromPin !== this.pinTwo && toPin !== this.pinTwo) {
+            sparePin = this.pinTwo;
+        }
+        if (fromPin !== this.pinThree && toPin !== this.pinThree) {
+            sparePin = this.pinThree;
+        }
+        
+        const numberOfMoves = (Math.pow(2, this.numberOfDisks)) - 1;
+        
+        if (this.numberOfDisks %2 === 0) {
+            const tempPin = sparePin;
+            sparePin = toPin;
+            toPin = tempPin;
+        }
+
+        for (let i = 0; i < numberOfMoves; i++) {
+            if (i % 3 === 0) {
+                if (fromPin.peek() === undefined) {
+                    this.moveDisk(toPin, fromPin);
+                } else if (toPin.peekTail() === undefined || fromPin.peekTail().size < toPin.peekTail().size) {
+                    this.moveDisk(fromPin, toPin);
+                } else {
+                    this.moveDisk(toPin, fromPin);
+                }
+            } else if (i % 3 === 1) {
+                if (fromPin.peek() === undefined) {
+                    this.moveDisk(sparePin, fromPin);
+                } else if (sparePin.peekTail() === undefined || fromPin.peekTail().size < sparePin.peekTail().size) {
+                    this.moveDisk(fromPin, sparePin);
+                } else {
+                    this.moveDisk(sparePin, fromPin);
+                }
+            } else {
+                if (sparePin.peek() === undefined) {
+                    this.moveDisk(toPin, sparePin);
+                } else if (toPin.peekTail() === undefined || sparePin.peekTail().size < toPin.peekTail().size) {
+                    this.moveDisk(sparePin, toPin);
+                } else {
+                    this.moveDisk(toPin, sparePin);
+                }
+            }
         }
     }
 
@@ -125,6 +176,8 @@ export default class Gameboard {
         }
         toPin.addToEnd(fromPin.removeFromTail());
         this.result.addToEnd(this.toString());
+        this.numberOfMoves++;
+        // console.log(this.numberOfMoves);
         /*Move Maybe VV*/
         return this.instanceSave();
 
